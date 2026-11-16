@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>循环背景音乐</title>
+
+<style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    overflow: hidden;
+  }
+
+  /* 浏览器拦截自动播放时才显示 */
+  #playButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 999px;
+    padding: 11px 19px;
+    background: rgba(20,35,48,.82);
+    color: #f1f5f7;
+    font: 14px "Microsoft YaHei", sans-serif;
+    cursor: pointer;
+  }
+
+  #playButton[hidden] {
+    display: none !important;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- 自动播放、无限循环 -->
+<audio
+  id="bgm"
+  src="./music1.mp3"
+  autoplay
+  loop
+  preload="auto">
+</audio>
+
+<!-- 默认隐藏 -->
+<button id="playButton" hidden>
+  ▶ 点击播放音乐
+</button>
+
+<script>
+const audio = document.getElementById("bgm");
+const button = document.getElementById("playButton");
+
+audio.loop = true;
+audio.volume = 1;
+
+async function startMusic() {
+  try {
+    await audio.play();
+    button.hidden = true;
+  } catch (error) {
+    button.hidden = false;
+
+    if (error.name === "NotAllowedError") {
+      button.textContent = "▶ 点击播放音乐";
+    } else {
+      button.textContent =
+        "音频未加载，请检查 music1.mp3";
+    }
+  }
+}
+
+// 打开网页后尝试自动播放
+window.addEventListener(
+  "load",
+  startMusic,
+  { once: true }
+);
+
+// 如果被浏览器拦截，允许点击播放
+button.addEventListener("click", startMusic);
+
+// 播放成功后隐藏按钮
+audio.addEventListener("playing", () => {
+  button.hidden = true;
+});
+</script>
+
+</body>
+</html>
